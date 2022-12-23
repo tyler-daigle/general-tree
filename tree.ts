@@ -91,8 +91,18 @@ export class Tree {
         item = dir.nextChild();
       }
     }
-
     return files;
+  }
+
+  // TODO:
+  /*
+    make a function to get the names of all the directories.
+    use getDirectorySize() to traverse down the tree from the selected directory and sum
+    up all of the file sizes.
+  */
+  getDirectorySize(dirName: string): number {
+
+    return 0;
   }
 
   getRoot(): Leaf | null {

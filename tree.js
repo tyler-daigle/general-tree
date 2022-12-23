@@ -82,6 +82,15 @@ class Tree {
         }
         return files;
     }
+    // TODO:
+    /*
+      make a function to get the names of all the directories.
+      use getDirectorySize() to traverse down the tree from the selected directory and sum
+      up all of the file sizes.
+    */
+    getDirectorySize(dirName) {
+        return 0;
+    }
     getRoot() {
         return this.root;
     }

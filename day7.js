@@ -33,13 +33,19 @@ function executeCD(command, currentDirName, fileSystem) {
         const input = (yield loadInput("test-input.txt")).split("\n");
         let currentDirName = "/";
         input.forEach(line => {
+            var _a;
             const command = line.split(" ");
             if (command[0] === "$") {
                 switch (command[1]) {
                     case "cd":
                         console.log("Changing Directory");
-                        executeCD(line.substring(1), currentDirName, fileSystem);
-                        currentDirName = command[2];
+                        if (command[2] === "..") {
+                            currentDirName = (_a = fileSystem.getParentDirectory(currentDirName)) === null || _a === void 0 ? void 0 : _a.data.name;
+                        }
+                        else {
+                            executeCD(line.substring(1), currentDirName, fileSystem);
+                            currentDirName = command[2];
+                        }
                         break;
                     case "ls":
                         // we can kind of ignore this?
@@ -59,8 +65,10 @@ function executeCD(command, currentDirName, fileSystem) {
                 }
             }
         });
-        const files = fileSystem.getFiles("d");
-        files.forEach(file => console.log(`${file.name} : ${file.size}`));
+        // const files = fileSystem.getFiles("d");
+        // files.forEach(file => console.log(`${file.name} : ${file.size}`));
+        const p = fileSystem.getParentDirectory("d");
+        console.log(p === null || p === void 0 ? void 0 : p.data.name);
     });
 })();
 //# sourceMappingURL=day7.js.map

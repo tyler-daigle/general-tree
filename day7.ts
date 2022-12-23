@@ -30,8 +30,12 @@ function executeCD(command: string, currentDirName: string, fileSystem: Tree): L
       switch (command[1]) {
         case "cd":
           console.log("Changing Directory");
-          executeCD(line.substring(1), currentDirName, fileSystem);
-          currentDirName = command[2];
+          if (command[2] === "..") {
+            currentDirName = fileSystem.getParentDirectory(currentDirName)?.data.name!;
+          } else {
+            executeCD(line.substring(1), currentDirName, fileSystem);
+            currentDirName = command[2];
+          }
           break;
         case "ls":
           // we can kind of ignore this?
@@ -50,6 +54,8 @@ function executeCD(command: string, currentDirName: string, fileSystem: Tree): L
     }
   });
 
-  const files = fileSystem.getFiles("d");
-  files.forEach(file => console.log(`${file.name} : ${file.size}`));
+  // const files = fileSystem.getFiles("d");
+  // files.forEach(file => console.log(`${file.name} : ${file.size}`));
+  const p = fileSystem.getParentDirectory("d");
+  console.log(p?.data.name);
 })();

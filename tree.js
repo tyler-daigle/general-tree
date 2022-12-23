@@ -1,19 +1,27 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Leaf = exports.Tree = exports.ItemType = void 0;
+const console_1 = require("console");
 var ItemType;
 (function (ItemType) {
     ItemType[ItemType["Directory"] = 0] = "Directory";
     ItemType[ItemType["File"] = 1] = "File";
-})(ItemType || (ItemType = {}));
+})(ItemType = exports.ItemType || (exports.ItemType = {}));
 class Tree {
     constructor() {
-        this.root = new Leaf({ name: "root", type: ItemType.Directory });
+        this.root = new Leaf({ name: "/", type: ItemType.Directory });
     }
-    findDirectory(dirName) {
+    findDirectory(dirName, parentDir) {
         const queue = [];
         if (this.root === null) {
             return null;
         }
-        queue.push(this.root);
+        if (parentDir) {
+            queue.push(parentDir);
+        }
+        else {
+            queue.push(this.root);
+        }
         while (queue.length > 0) {
             const currLeaf = queue.shift();
             if (currLeaf.data.type === ItemType.Directory && currLeaf.data.name === dirName) {
@@ -32,6 +40,30 @@ class Tree {
                     }
                 }
             }
+        }
+        return null;
+    }
+    getParentDirectory(dirName) {
+        let currParent = this.root;
+        (0, console_1.assert)(currParent !== null);
+        if (currParent === null) {
+            return null;
+        }
+        const queue = [];
+        queue.push(currParent);
+        while (queue.length > 0) {
+            // get the children of the currParent and check for dirName
+            const children = currParent.getAllChildren();
+            for (const child of children) {
+                if (child.data.type === ItemType.Directory && child.data.name === dirName) {
+                    return currParent;
+                }
+                else if (child.data.type === ItemType.Directory) {
+                    queue.push(child);
+                }
+            }
+            ;
+            currParent = queue.shift();
         }
         return null;
     }
@@ -68,6 +100,7 @@ class Tree {
         return null;
     }
 }
+exports.Tree = Tree;
 class Leaf {
     constructor(item) {
         this.children = [];
@@ -88,6 +121,9 @@ class Leaf {
             return null;
         }
     }
+    getAllChildren() {
+        return [...this.children];
+    }
     reset() {
         this.currChild = 0;
     }
@@ -95,18 +131,19 @@ class Leaf {
         return this.children.length;
     }
 }
+exports.Leaf = Leaf;
 // create the tree
 // add a new directory
 // add some files to the directory
 // list the files in the directory
-const tree = new Tree();
-tree.createDirectory("root", "documents");
-tree.addFile("documents", "secret.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "6502.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "nes.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "assembler.pdf", Math.floor(Math.random() * 10000));
-const files = tree.getFiles("documents");
-files.forEach(file => console.log(file));
+// const tree = new Tree();
+// tree.createDirectory("root", "documents");
+// tree.addFile("documents", "secret.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "6502.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "nes.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "assembler.pdf", Math.floor(Math.random() * 10000));
+// const files = tree.getFiles("documents");
+// files.forEach(file => console.log(file));
 // const files: Item[] = [
 //   { name: "home", type: ItemType.Directory },
 //   { name: "pictures", type: ItemType.Directory },
@@ -138,3 +175,4 @@ files.forEach(file => console.log(file));
 // } else {
 //   console.log("Did not find the textfiles directory");
 // }
+//# sourceMappingURL=tree.js.map

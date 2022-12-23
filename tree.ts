@@ -1,28 +1,35 @@
-enum ItemType {
+import { assert } from "console";
+
+export enum ItemType {
   Directory,
   File
 }
 
-interface Item {
+export interface Item {
   name: string;
   type: ItemType;
   size?: number;
 }
 
-class Tree {
+export class Tree {
   private root: Leaf;
 
   constructor() {
-    this.root = new Leaf({ name: "root", type: ItemType.Directory });
+    this.root = new Leaf({ name: "/", type: ItemType.Directory });
   }
 
-  findDirectory(dirName: string): Leaf | null {
+  findDirectory(dirName: string, parentDir?: Leaf): Leaf | null {
     const queue = [];
     if (this.root === null) {
       return null;
     }
 
-    queue.push(this.root);
+    if (parentDir) {
+      queue.push(parentDir);
+    } else {
+      queue.push(this.root);
+    }
+
     while (queue.length > 0) {
       const currLeaf: Leaf = queue.shift()!;
       if (currLeaf.data.type === ItemType.Directory && currLeaf.data.name === dirName) {
@@ -41,6 +48,33 @@ class Tree {
         }
       }
     }
+    return null;
+  }
+
+  getParentDirectory(dirName: string): Leaf | null {
+    let currParent = this.root;
+    assert(currParent !== null);
+    if (currParent === null) {
+      return null;
+    }
+
+    const queue: Leaf[] = [];
+    queue.push(currParent);
+
+
+    while (queue.length > 0) {
+      // get the children of the currParent and check for dirName
+      const children = currParent.getAllChildren();
+      for (const child of children) {
+        if (child.data.type === ItemType.Directory && child.data.name === dirName) {
+          return currParent;
+        } else if (child.data.type === ItemType.Directory) {
+          queue.push(child);
+        }
+      };
+      currParent = queue.shift()!;
+    }
+
     return null;
   }
 
@@ -82,7 +116,7 @@ class Tree {
   }
 }
 
-class Leaf {
+export class Leaf {
   public data: Item;
   private children: Leaf[] = [];
   private currChild: number = 0;
@@ -106,6 +140,10 @@ class Leaf {
     }
   }
 
+  getAllChildren(): Leaf[] {
+    return [...this.children];
+  }
+
   reset() {
     this.currChild = 0;
   }
@@ -121,15 +159,15 @@ class Leaf {
 // add some files to the directory
 // list the files in the directory
 
-const tree = new Tree();
-tree.createDirectory("root", "documents");
-tree.addFile("documents", "secret.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "6502.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "nes.txt", Math.floor(Math.random() * 10000));
-tree.addFile("documents", "assembler.pdf", Math.floor(Math.random() * 10000));
+// const tree = new Tree();
+// tree.createDirectory("root", "documents");
+// tree.addFile("documents", "secret.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "6502.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "nes.txt", Math.floor(Math.random() * 10000));
+// tree.addFile("documents", "assembler.pdf", Math.floor(Math.random() * 10000));
 
-const files = tree.getFiles("documents");
-files.forEach(file => console.log(file));
+// const files = tree.getFiles("documents");
+// files.forEach(file => console.log(file));
 
 // const files: Item[] = [
 //   { name: "home", type: ItemType.Directory },
